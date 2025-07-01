@@ -13,9 +13,9 @@ public class HomeSale {
    public String property_type;
    public String strata_lot_number;
    public String property_name;
-   public int area;
+   public double area;
    public String area_type;
-   public String contract_data;
+   public String contract_date;
    public String settlement_date;
    public String zoning;
    public String nature_of_property;
@@ -26,7 +26,7 @@ public class HomeSale {
 
 
    public HomeSale(int property_id, String download_date, String council_name, int purchase_price, String address, int post_code,
-    String property_type, String strata_lot_number, String property_name, int area, String area_type, String contract_data, 
+    String property_type, String strata_lot_number, String property_name, double area, String area_type, String contract_date, 
     String settlement_date, String zoning, String nature_of_property, String primary_purpose, String legal_description) {
        this.property_id = property_id;
        this.download_date = download_date;
@@ -39,7 +39,7 @@ public class HomeSale {
        this.property_name = property_name;
        this.area = area;
        this.area_type = area_type;
-       this.contract_data = contract_data;
+       this.contract_date = contract_date;
        this.settlement_date = settlement_date;
        this.zoning = zoning;
        this.nature_of_property = nature_of_property;
