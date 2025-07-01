@@ -36,8 +36,8 @@ public class SalesDAO {
 
             MongoClient mongoClient = MongoClients.create(settings);
 
-            MongoDatabase database = mongoClient.getDatabase("realestate"); // Replace if needed
-            collection = database.getCollection("sales"); // Replace if needed
+            MongoDatabase database = mongoClient.getDatabase("HomeSale"); // Replace if needed
+            collection = database.getCollection("Sales"); // Replace if needed
 
         } catch (MongoException e) {
             System.err.println("Failed to connect to MongoDB: " + e.getMessage());
@@ -91,12 +91,10 @@ public class SalesDAO {
 
     public List<Integer> getAllSalePrices() {
         List<Integer> prices = new ArrayList<>();
-        int count = 0;
         try (MongoCursor<Document> cursor = collection.find().iterator()) {
-            while (cursor.hasNext() & count < 100) {
+            while (cursor.hasNext()) {
                 Document doc = cursor.next();
                 prices.add(doc.getInteger("purchase_price", 0));
-                count++;
             }
         }
         return prices;
@@ -104,9 +102,11 @@ public class SalesDAO {
 
     public List<HomeSale> getAllSales() {
         List<HomeSale> allSales = new ArrayList<>();
+        int count = 0;
         try (MongoCursor<Document> cursor = collection.find().iterator()) {
-            while (cursor.hasNext()) {
+            while (cursor.hasNext() & count < 1000) {
                 allSales.add(documentToHomeSale(cursor.next()));
+                count++;
             }
         }
         return allSales;
