@@ -44,7 +44,7 @@ public class SalesController {
     }
 
     // implements GET /sales/{saleID}
-    public void getSaleByID(Context ctx, String id) {
+    public void getSaleByID(Context ctx, int id) {
 
         Optional<HomeSale> sale = homeSales.getSaleById(id);
         sale.map(ctx::json)
@@ -53,7 +53,7 @@ public class SalesController {
     }
 
     // Implements GET /sales/postcode/{postcodeID}
-    public void findSaleByPostCode(Context ctx, String postCode) {
+    public void findSaleByPostCode(Context ctx, int postCode) {
         List<HomeSale> sales = homeSales.getSalesByPostCode(postCode);
         if (sales.isEmpty()) {
             ctx.result("No sales for postcode found");
