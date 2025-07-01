@@ -1,65 +1,105 @@
 package sales;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import org.bson.Document;
+
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoException;
+import com.mongodb.ServerApi;
+import com.mongodb.ServerApiVersion;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 
 public class SalesDAO {
 
-    // List to hold test data
-    private  List<HomeSale> sales = new ArrayList<>();
-
+    private MongoCollection<Document> collection;
 
     public SalesDAO() {
-        // create some test data
-        sales.add(new HomeSale("0", "2257", "2000000"));
-        sales.add(new HomeSale("1", "2262", "1300000"));
-        sales.add(new HomeSale("2", "2000", "4000000"));
-        sales.add(new HomeSale("3", "2000", "1000000"));
-      }
+        try {
+            ConnectionString connString = new ConnectionString("mongodb+srv://kulkarnisid:123@group5cluster.mygjmiu.mongodb.net/?retryWrites=true&w=majority&appName=Group5Cluster");
 
-    public boolean newSale (HomeSale homeSale){
-            sales.add(homeSale);
-            return true;
+            ServerApi serverApi = ServerApi.builder()
+                    .version(ServerApiVersion.V1)
+                    .build();
+
+            MongoClientSettings settings = MongoClientSettings.builder()
+                    .applyConnectionString(connString)
+                    .serverApi(serverApi)
+                    .build();
+
+            MongoClient mongoClient = MongoClients.create(settings);
+
+            MongoDatabase database = mongoClient.getDatabase("realestate"); // Replace with your DB name
+            collection = database.getCollection("sales"); // Replace with your collection name
+
+        } catch (MongoException e) {
+            System.err.println("Failed to connect to MongoDB: " + e.getMessage());
+        }
     }
 
-    // returns Optional wrapping a HomeSale if id is found, empty Optional otherwise
-    public Optional<HomeSale> getSaleById(String saleID) {
+    public boolean newSale(HomeSale homeSale) {
+        try {
+            Document doc = new Document("saleID", homeSale.saleID)
+                    .append("postcode", homeSale.postcode)
+                    .append("salePrice", homeSale.salePrice);
+            collection.insertOne(doc);
+            return true;
+        } catch (MongoException e) {
+            System.err.println("Error inserting document: " + e.getMessage());
+            return false;
+        }
+    }
 
-        for (HomeSale u : sales) {
-            if (u.saleID.equals(saleID)) {
-                System.out.println("id found ");
-                return Optional.of(u);
-             }
+    public Optional<HomeSale> getSaleById(String saleID) {
+        Document doc = collection.find(new Document("saleID", saleID)).first();
+        if (doc != null) {
+            return Optional.of(documentToHomeSale(doc));
         }
         return Optional.empty();
     }
 
-    // returns a List of homesales  in a given postCode
     public List<HomeSale> getSalesByPostCode(String postCode) {
-        System.out.println("postcode is: " + postCode);
-        List<HomeSale> tmp = new ArrayList<>();
-         for (HomeSale u : sales) {
-            if (u.postcode.equals(postCode)) {
-                tmp.add(u);
-                System.out.println("postcode found ");
+        List<HomeSale> result = new ArrayList<>();
+        try (MongoCursor<Document> cursor = collection.find(new Document("postcode", postCode)).iterator()) {
+            while (cursor.hasNext()) {
+                result.add(documentToHomeSale(cursor.next()));
             }
         }
-        return tmp == null ? Collections.emptyList() : tmp;
+        return result;
     }
 
-    // returns the individual prices for all sales. Potentially large
     public List<String> getAllSalePrices() {
-        return   sales.stream()
-                .map(e -> e.salePrice)
-                .collect(Collectors.toList());
+        List<String> prices = new ArrayList<>();
+        try (MongoCursor<Document> cursor = collection.find().iterator()) {
+            while (cursor.hasNext()) {
+                prices.add(cursor.next().getString("salePrice"));
+            }
+        }
+        return prices;
     }
 
-    // returns all home sales. Potentially large
     public List<HomeSale> getAllSales() {
-        return   sales.stream().collect(Collectors.toList());
+        List<HomeSale> allSales = new ArrayList<>();
+        try (MongoCursor<Document> cursor = collection.find().iterator()) {
+            while (cursor.hasNext()) {
+                allSales.add(documentToHomeSale(cursor.next()));
+            }
+        }
+        return allSales;
     }
 
+    private HomeSale documentToHomeSale(Document doc) {
+        return new HomeSale(
+                doc.getString("saleID"),
+                doc.getString("postcode"),
+                doc.getString("salePrice")
+        );
+    }
 }
