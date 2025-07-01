@@ -44,17 +44,17 @@ public class SalesController {
     }
 
     // implements GET /sales/{saleID}
-    public void getSaleByID(Context ctx, int id) {
+    public void getSaleByID(Context ctx, String id) {
 
-        Optional<HomeSale> sale = homeSales.getSaleById(id);
+        Optional<HomeSale> sale = homeSales.getSaleById(Integer.parseInt(id));
         sale.map(ctx::json)
                 .orElseGet (() -> error (ctx, "Sale not found", 404));
 
     }
 
     // Implements GET /sales/postcode/{postcodeID}
-    public void findSaleByPostCode(Context ctx, int postCode) {
-        List<HomeSale> sales = homeSales.getSalesByPostCode(postCode);
+    public void findSaleByPostCode(Context ctx, String postCode) {
+        List<HomeSale> sales = homeSales.getSalesByPostCode(Integer.parseInt(postCode));
         if (sales.isEmpty()) {
             ctx.result("No sales for postcode found");
             ctx.status(404);
