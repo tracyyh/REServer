@@ -36,8 +36,8 @@ public class SalesDAO {
 
             MongoClient mongoClient = MongoClients.create(settings);
 
-            MongoDatabase database = mongoClient.getDatabase("HomeSale"); // Replace if needed
-            collection = database.getCollection("Sales"); // Replace if needed
+            MongoDatabase database = mongoClient.getDatabase("HomeSale"); 
+            collection = database.getCollection("Sales");
 
         } catch (MongoException e) {
             System.err.println("Failed to connect to MongoDB: " + e.getMessage());
@@ -104,31 +104,46 @@ public class SalesDAO {
         List<HomeSale> allSales = new ArrayList<>();
         int count = 0;
         try (MongoCursor<Document> cursor = collection.find().iterator()) {
-            while (cursor.hasNext() & count < 1000) {
+            while (cursor.hasNext() & count < 100) {
                 allSales.add(documentToHomeSale(cursor.next()));
                 count++;
             }
         }
         return allSales;
     }
+    private int parseAreaField(Object areaValue) {
+    if (areaValue instanceof Integer) {
+        return (Integer) areaValue;
+    } else if (areaValue instanceof Double) {
+        return ((Double) areaValue).intValue(); // truncate decimals
+    } else if (areaValue instanceof String) {
+        try {
+            return (int) Double.parseDouble((String) areaValue);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+    return 0; 
+}
+
 
     private HomeSale documentToHomeSale(Document doc) {
         return new HomeSale(
-                doc.getInteger("property_id", 0),
+                (doc.get("property_id") instanceof Integer ? doc.getInteger("property_id", 0) :  Integer.parseInt(doc.getString("property_id"))),
                 doc.getString("download_date"),
                 doc.getString("council_name"),
                 doc.getInteger("purchase_price", 0),
                 doc.getString("address"),
                 doc.getInteger("post_code", 0),
                 doc.getString("property_type"),
-                doc.getString("strata_lot_number"),
+                (doc.get("strata_lot_number") instanceof Integer ? Integer.toString(doc.getInteger("strata_lot_number")) : doc.getString("strata_lot_number")),
                 doc.getString("property_name"),
-                doc.getInteger("area", 0),
+                parseAreaField(doc.get("area")),
                 doc.getString("area_type"),
                 doc.getString("contract_data"),
                 doc.getString("settlement_date"),
                 doc.getString("zoning"),
-                doc.getString("nature_of_property"),
+                (doc.get("nature_of_property") instanceof Integer ? Integer.toString(doc.getInteger("nature_of_property")) : doc.getString("nature_of_property")),    
                 doc.getString("primary_purpose"),
                 doc.getString("legal_description")
         );
