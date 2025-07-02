@@ -53,7 +53,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>neu.cs.doc.Main</mainClass>
+                                    <mainClass>database.MongoClientConnectionExample</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
