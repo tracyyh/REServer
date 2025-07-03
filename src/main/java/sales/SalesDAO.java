@@ -57,7 +57,7 @@ public class SalesDAO {
                     .append("property_name", homeSale.property_name)
                     .append("area", homeSale.area)
                     .append("area_type", homeSale.area_type)
-                    .append("contract_data", homeSale.contract_data)
+                    .append("contract_date", homeSale.contract_date)
                     .append("settlement_date", homeSale.settlement_date)
                     .append("zoning", homeSale.zoning)
                     .append("nature_of_property", homeSale.nature_of_property)
@@ -140,7 +140,7 @@ public class SalesDAO {
                 doc.getString("property_name"),
                 parseAreaField(doc.get("area")),
                 doc.getString("area_type"),
-                doc.getString("contract_data"),
+                doc.getString("contract_date"),
                 doc.getString("settlement_date"),
                 doc.getString("zoning"),
                 (doc.get("nature_of_property") instanceof Integer ? Integer.toString(doc.getInteger("nature_of_property")) : doc.getString("nature_of_property")),    
