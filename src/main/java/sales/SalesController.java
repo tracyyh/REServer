@@ -1,9 +1,20 @@
 package sales;
 
 import io.javalin.http.Context;
+import io.javalin.openapi.OpenApi;
+import io.javalin.openapi.OpenApiContent;
+import io.javalin.openapi.OpenApiRequestBody;
+import io.javalin.openapi.OpenApiResponse;
 
+import java.ErrorResponse;
+import java.user.NewUserRequest;
 import java.util.List;
 import java.util.Optional;
+
+import java.ErrorResponse;
+import io.javalin.http.Context;
+import io.javalin.http.NotFoundResponse;
+import io.javalin.openapi.*;
 
 public class SalesController {
 
@@ -13,7 +24,18 @@ public class SalesController {
         this.homeSales = homeSales;
     }
 
-    // implements POST /sales
+    @OpenApi(
+        summary = "Create user",
+        operationId = "createUser",
+        path = "/users",
+        methods = HttpMethod.POST,
+        tags = {"User"},
+        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
+        responses = {
+            @OpenApiResponse(status = "201"),
+            @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
+        }
+    )
     public void createSale(Context ctx) {
 
         // Extract Home Sale from request body
@@ -31,7 +53,18 @@ public class SalesController {
         }
     }
 
-    // implements Get /sales
+    @OpenApi(
+        summary = "Create user",
+        operationId = "createUser",
+        path = "/users",
+        methods = HttpMethod.POST,
+        tags = {"User"},
+        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
+        responses = {
+            @OpenApiResponse(status = "201"),
+            @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
+        }
+    )
     public void getAllSales(Context ctx) {
         List <HomeSale> allSales = homeSales.getAllSales();
         if (allSales.isEmpty()) {
@@ -43,7 +76,18 @@ public class SalesController {
         }
     }
 
-    // implements GET /sales/{saleID}
+    @OpenApi(
+        summary = "Create user",
+        operationId = "createUser",
+        path = "/users",
+        methods = HttpMethod.POST,
+        tags = {"User"},
+        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
+        responses = {
+            @OpenApiResponse(status = "201"),
+            @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
+        }
+    )
     public void getSaleByID(Context ctx, String id) {
 
         Optional<HomeSale> sale = homeSales.getSaleById(Integer.parseInt(id));
@@ -52,7 +96,18 @@ public class SalesController {
 
     }
 
-    // Implements GET /sales/postcode/{postcodeID}
+    @OpenApi(
+        summary = "Create user",
+        operationId = "createUser",
+        path = "/users",
+        methods = HttpMethod.POST,
+        tags = {"User"},
+        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
+        responses = {
+            @OpenApiResponse(status = "201"),
+            @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
+        }
+    )
     public void findSaleByPostCode(Context ctx, String postCode) {
         List<HomeSale> sales = homeSales.getSalesByPostCode(Integer.parseInt(postCode));
         if (sales.isEmpty()) {
