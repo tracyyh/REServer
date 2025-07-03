@@ -44,6 +44,9 @@ public class REServer {
                 app.get("/sales/postcode/{postcode}", ctx -> {
                     salesHandler.findSaleByPostCode(ctx, ctx.pathParam("postcode"));
                 });
+                // Get the average sale price for a specified postcode
+                app.get("/sales/postcode/{postcode}/average", ctx -> {
+                    salesHandler.getAvgPriceByPostCode(ctx, ctx.pathParam("postcode"));
 
                 app.get("/sales/price/{low}/{high}", ctx -> {
                     int low = Integer.parseInt(ctx.pathParam("low"));
@@ -51,8 +54,6 @@ public class REServer {
                     ctx.json(sales.getSalesByPriceRange(low, high));
                 });
             });
-
-
         }
 }
 
