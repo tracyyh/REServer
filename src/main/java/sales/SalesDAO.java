@@ -124,11 +124,31 @@ public class SalesDAO {
         }
         return allSales;
     }
+
+    public List<HomeSale> getSalesByPriceRange(int low, int high) {
+        List<HomeSale> salesInRange = new ArrayList<>();
+        int count = 0;
+        if (low < 0 || high < 0 || low > high) {
+            System.err.println("Invalid price range: low = " + low + ", high = " + high);
+            return salesInRange;
+        }
+        try (MongoCursor<Document> cursor = collection.find(new Document("purchase_price", new Document("$gte", low).append("$lte", high))).iterator()) {
+            while (cursor.hasNext() & count < 100) {
+                salesInRange.add(documentToHomeSale(cursor.next()));
+                count++;
+        }
+        } catch (MongoException e) {
+            System.err.println("Error retrieving sales by price range: " + e.getMessage());
+        }
+        return salesInRange;
+    }
+
+
     private int parseAreaField(Object areaValue) {
     if (areaValue instanceof Integer) {
         return (Integer) areaValue;
     } else if (areaValue instanceof Double) {
-        return ((Double) areaValue).intValue(); // truncate decimals
+        return ((Double) areaValue).intValue();
     } else if (areaValue instanceof String) {
         try {
             return (int) Double.parseDouble((String) areaValue);

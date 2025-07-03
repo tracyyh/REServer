@@ -44,9 +44,17 @@ public class REServer {
                 app.get("/sales/postcode/{postcode}", ctx -> {
                     salesHandler.findSaleByPostCode(ctx, ctx.pathParam("postcode"));
                 });
+<<<<<<< HEAD
                 // Get the average sale price for a specified postcode
                 app.get("/sales/postcode/{postcode}/average", ctx -> {
                     salesHandler.getAvgPriceByPostCode(ctx, ctx.pathParam("postcode"));
+=======
+
+                app.get("/sales/price/{low}/{high}", ctx -> {
+                    int low = Integer.parseInt(ctx.pathParam("low"));
+                    int high = Integer.parseInt(ctx.pathParam("high"));
+                    ctx.json(sales.getSalesByPriceRange(low, high));
+>>>>>>> 559a4fce223b4a9d61164dafd3bc7e9b9eb8e721
                 });
             });
 

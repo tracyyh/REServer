@@ -64,6 +64,23 @@ public class SalesController {
         }
     }
 
+    public void getSalesByPriceRange(Context ctx, String low, String high) {
+        try {
+            int lowPrice = Integer.parseInt(low);
+            int highPrice = Integer.parseInt(high);
+            List<HomeSale> salesInRange = homeSales.getSalesByPriceRange(lowPrice, highPrice);
+            if (salesInRange.isEmpty()) {
+                ctx.result("No sales found in the specified price range");
+                ctx.status(404);
+            } else {
+                ctx.json(salesInRange);
+                ctx.status(200);
+            }
+        } catch (NumberFormatException e) {
+            error(ctx, "Invalid price range format", 400);
+        }
+    }
+
     // Implements GET /sales/postcode/{postcodeID}/average
     public void getAvgPriceByPostCode(Context ctx, String postCode) {
         int avgPrice = homeSales.getAvgPriceByPostCode(Integer.parseInt(postCode));
