@@ -130,6 +130,7 @@ public class SalesDAO {
         int count = 0;
         if (low < 0 || high < 0 || low > high) {
             System.err.println("Invalid price range: low = " + low + ", high = " + high);
+            System.err.println("sales:" + salesInRange);
             return salesInRange;
         }
         try (MongoCursor<Document> cursor = collection.find(new Document("purchase_price", new Document("$gte", low).append("$lte", high))).iterator()) {
@@ -158,13 +159,21 @@ public class SalesDAO {
     }
     return 0; 
 }
+    private String parseStringField(Object fieldValue) {
+        if (fieldValue instanceof Integer) {
+            return Integer.toString((Integer) fieldValue);
+        } else if (fieldValue instanceof String) {
+            return (String) fieldValue;
+        }
+        return ""; 
+    }
 
 
     private HomeSale documentToHomeSale(Document doc) {
         return new HomeSale(
                 (doc.get("property_id") instanceof Integer ? doc.getInteger("property_id", 0) :  Integer.parseInt(doc.getString("property_id"))),
                 doc.getString("download_date"),
-                doc.getString("council_name"),
+                parseStringField(doc.get("council_name")),
                 doc.getInteger("purchase_price", 0),
                 doc.getString("address"),
                 doc.getInteger("post_code", 0),
