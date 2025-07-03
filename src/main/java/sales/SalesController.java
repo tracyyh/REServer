@@ -2,6 +2,9 @@ package sales;
 
 import io.javalin.http.Context;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,15 +96,58 @@ public class SalesController {
         }
     }
 
+    // Implements GET /sort/price
+    public void sortSalesByPrice(Context ctx) {
+        List <HomeSale> sortedSales = homeSales.getAllSales();
+        sortedSales.sort(new Comparator<HomeSale>() {
+            public int compare(HomeSale sale1, HomeSale sale2) {
+                return sale1.purchase_price - sale2.purchase_price;
+            }
+        });
+
+        if (sortedSales.isEmpty()) {
+            ctx.result("No Sales Found");
+            ctx.status(404);
+        } else {
+            ctx.json(sortedSales);
+            ctx.status(200);
+        }
+    }
+
+    // Implements GET /sort/price-per-area
+    public void sortSalesByPricePerArea(Context ctx) {
+        List <HomeSale> allSales = homeSales.getAllSales();
+        Iterator<HomeSale> salesIterator = allSales.iterator();
+
+        List<HomeSale> salesWithArea = new ArrayList<>();
+        
+        while (salesIterator.hasNext()) {
+            HomeSale sale = salesIterator.next();
+            if (sale.area != 0) {
+                salesWithArea.add(sale);
+            } 
+        }
+        
+        salesWithArea.sort(new Comparator<HomeSale>() {
+            public int compare(HomeSale sale1, HomeSale sale2) {
+                int sale1PricePerArea = sale1.purchase_price/sale1.area;
+                int sale2PricePerArea = sale2.purchase_price/sale2.area;
+                return sale1PricePerArea - sale2PricePerArea;
+            }
+        });
+
+        if (salesWithArea.isEmpty()) {
+            ctx.result("No Sales Found");
+            ctx.status(404);
+        } else {
+            ctx.json(salesWithArea);
+            ctx.status(200);
+        }
+    }
+
     private Context error(Context ctx, String msg, int code) {
         ctx.result(msg);
         ctx.status(code);
         return ctx;
     }
-
-
-
-    
-
-
 }
