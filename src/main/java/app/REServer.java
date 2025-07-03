@@ -44,6 +44,10 @@ public class REServer {
                 app.get("/sales/postcode/{postcode}", ctx -> {
                     salesHandler.findSaleByPostCode(ctx, ctx.pathParam("postcode"));
                 });
+                // Get the average sale price for a specified postcode
+                app.get("/sales/postcode/{postcode}/average", ctx -> {
+                    salesHandler.getAvgPriceByPostCode(ctx, ctx.pathParam("postcode"));
+                });
             });
 
 

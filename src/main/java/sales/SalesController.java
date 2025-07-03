@@ -64,6 +64,18 @@ public class SalesController {
         }
     }
 
+    // Implements GET /sales/postcode/{postcodeID}/average
+    public void getAvgPriceByPostCode(Context ctx, String postCode) {
+        int avgPrice = homeSales.getAvgPriceByPostCode(Integer.parseInt(postCode));
+        if (avgPrice == -1) {
+            ctx.result("No sales for postcode found");
+            ctx.status(404);
+        } else {
+            ctx.json(avgPrice);
+            ctx.status(200);
+        }
+    }
+
     private Context error(Context ctx, String msg, int code) {
         ctx.result(msg);
         ctx.status(code);

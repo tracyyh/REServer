@@ -23,7 +23,9 @@ public class HomeSale {
    public String legal_description;
 
 
-
+   public HomeSale() {
+      
+   }
 
    public HomeSale(int property_id, String download_date, String council_name, int purchase_price, String address, int post_code,
     String property_type, String strata_lot_number, String property_name, int area, String area_type, String contract_date, 

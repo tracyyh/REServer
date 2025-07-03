@@ -89,6 +89,19 @@ public class SalesDAO {
         return result;
     }
 
+    public int getAvgPriceByPostCode(int postCode) {
+        List<HomeSale> sales = this.getSalesByPostCode(postCode);
+        if (sales.isEmpty()) {
+            return -1;
+        }
+        long totalPrice = 0;
+        for (HomeSale sale : sales) {
+            totalPrice += sale.purchase_price;
+        }
+        long result = totalPrice / sales.size();
+        return (int) result;
+    }
+
     public List<Integer> getAllSalePrices() {
         List<Integer> prices = new ArrayList<>();
         try (MongoCursor<Document> cursor = collection.find().iterator()) {
