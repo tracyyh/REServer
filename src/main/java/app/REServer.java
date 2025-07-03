@@ -47,7 +47,7 @@ public class REServer {
                 // Get the average sale price for a specified postcode
                 app.get("/sales/postcode/{postcode}/average", ctx -> {
                     salesHandler.getAvgPriceByPostCode(ctx, ctx.pathParam("postcode"));
-
+                });        
                 app.get("/sales/price/{low}/{high}", ctx -> {
                     int low = Integer.parseInt(ctx.pathParam("low"));
                     int high = Integer.parseInt(ctx.pathParam("high"));
