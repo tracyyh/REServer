@@ -72,7 +72,7 @@ public class SalesController {
             int lowPrice = Integer.parseInt(low);
             int highPrice = Integer.parseInt(high);
             List<HomeSale> salesInRange = homeSales.getSalesByPriceRange(lowPrice, highPrice);
-            if (salesInRange.isEmpty()) {
+            if (salesInRange.size() == 0) {
                 ctx.result("No sales found in the specified price range");
                 ctx.status(404);
             } else {
