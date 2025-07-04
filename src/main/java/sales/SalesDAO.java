@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
 import org.bson.Document;
-
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -131,7 +129,7 @@ public class SalesDAO {
        List<HomeSale> allSales = new ArrayList<>();
        int count = 0;
        try (MongoCursor<Document> cursor = collection.find().iterator()) {
-           while (cursor.hasNext() & count < 100) {
+           while (cursor.hasNext() && count < 100) {
                allSales.add(documentToHomeSale(cursor.next()));
                count++;
            }
@@ -148,7 +146,7 @@ public class SalesDAO {
             return salesInRange;
         }
         try (MongoCursor<Document> cursor = collection.find(new Document("purchase_price", new Document("$gte", low).append("$lte", high))).iterator()) {
-            while (cursor.hasNext() & count < 100) {
+            while (cursor.hasNext() && count < 100) {
                 salesInRange.add(documentToHomeSale(cursor.next()));
                 count++;
         }
