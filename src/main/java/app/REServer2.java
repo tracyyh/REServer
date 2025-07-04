@@ -39,8 +39,6 @@ public class REServer2 {
 
             // API routes
             config.router.apiBuilder(() -> {
-
-                // User routes
                 path("users", () -> {
                     get(UserController::getAll);
                     post(UserController::create);
@@ -50,6 +48,7 @@ public class REServer2 {
                         delete(UserController::delete);
                     });
                 });
+            });
 
                 // // Sales routes
                 // path("sales", () -> {
@@ -64,7 +63,7 @@ public class REServer2 {
                 //         get(ctx -> salesHandler.findSaleByPostCode(ctx, ctx.pathParam("postcode")));
                 //     });
                 // });
-            });
+            
         }).start(7002);
 
         LOG.info("Real Estate server started at http://localhost:7002");
