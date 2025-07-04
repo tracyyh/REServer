@@ -11,9 +11,9 @@ import static io.javalin.apibuilder.ApiBuilder.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class REServer2 {
+public class REServer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(REServer2.class);
+    private static final Logger LOG = LoggerFactory.getLogger(REServer.class);
 
     public static void main(String[] args) {
 

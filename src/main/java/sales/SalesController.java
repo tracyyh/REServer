@@ -57,7 +57,6 @@ public class SalesController {
         path = "/sales",
         methods = HttpMethod.GET,
         tags = {"Sales"},
-        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
         responses = {
             @OpenApiResponse(status = "201"),
             @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
@@ -80,7 +79,6 @@ public class SalesController {
         path = "/sales/{saleID}",
         methods = HttpMethod.GET,
         tags = {"Sales"},
-        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
         responses = {
             @OpenApiResponse(status = "201"),
             @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
@@ -100,7 +98,6 @@ public class SalesController {
         path = "/sales/postcode/{postcode}",
         methods = HttpMethod.GET,
         tags = {"Sales"},
-        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
         responses = {
             @OpenApiResponse(status = "201"),
             @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
@@ -123,7 +120,6 @@ public class SalesController {
         path = "/sales/price/{low}/{high}",
         methods = HttpMethod.GET,
         tags = {"Sales"},
-        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
         responses = {
             @OpenApiResponse(status = "201"),
             @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
@@ -152,7 +148,6 @@ public class SalesController {
         path = "/sales/postcode/{postcode}/average",
         methods = HttpMethod.GET,
         tags = {"Price"},
-        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
         responses = {
             @OpenApiResponse(status = "201"),
             @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
@@ -175,7 +170,6 @@ public class SalesController {
         path = "/sort/price",
         methods = HttpMethod.GET,
         tags = {"Price"},
-        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
         responses = {
             @OpenApiResponse(status = "201"),
             @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
@@ -199,7 +193,6 @@ public class SalesController {
         path = "/sort/price-per-area",
         methods = HttpMethod.GET,
         tags = {"Price"},
-        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
         responses = {
             @OpenApiResponse(status = "201"),
             @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
