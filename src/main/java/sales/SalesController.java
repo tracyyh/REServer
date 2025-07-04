@@ -1,16 +1,15 @@
 package sales;
 
-import io.javalin.http.Context;
-
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import io.javalin.http.Context;
+
 public class SalesController {
 
-    private SalesDAO homeSales;
+    private final SalesDAO homeSales;
 
     public SalesController(SalesDAO homeSales) {
         this.homeSales = homeSales;
@@ -72,7 +71,7 @@ public class SalesController {
             int lowPrice = Integer.parseInt(low);
             int highPrice = Integer.parseInt(high);
             List<HomeSale> salesInRange = homeSales.getSalesByPriceRange(lowPrice, highPrice);
-            if (salesInRange.size() == 0) {
+            if (salesInRange.isEmpty()) {
                 ctx.result("No sales found in the specified price range");
                 ctx.status(404);
             } else {
@@ -99,12 +98,7 @@ public class SalesController {
     // Implements GET /sort/price
     public void sortSalesByPrice(Context ctx) {
         List <HomeSale> sortedSales = homeSales.getAllSales();
-        sortedSales.sort(new Comparator<HomeSale>() {
-            public int compare(HomeSale sale1, HomeSale sale2) {
-                return sale1.purchase_price - sale2.purchase_price;
-            }
-        });
-
+        sortedSales.sort((HomeSale sale1, HomeSale sale2) -> sale1.purchase_price - sale2.purchase_price);
         if (sortedSales.isEmpty()) {
             ctx.result("No Sales Found");
             ctx.status(404);
@@ -128,12 +122,10 @@ public class SalesController {
             } 
         }
         
-        salesWithArea.sort(new Comparator<HomeSale>() {
-            public int compare(HomeSale sale1, HomeSale sale2) {
-                int sale1PricePerArea = sale1.purchase_price/sale1.area;
-                int sale2PricePerArea = sale2.purchase_price/sale2.area;
-                return sale1PricePerArea - sale2PricePerArea;
-            }
+        salesWithArea.sort((HomeSale sale1, HomeSale sale2) -> {
+            int sale1PricePerArea = sale1.purchase_price/sale1.area;
+            int sale2PricePerArea = sale2.purchase_price/sale2.area;
+            return sale1PricePerArea - sale2PricePerArea;
         });
 
         if (salesWithArea.isEmpty()) {
