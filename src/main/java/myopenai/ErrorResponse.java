@@ -1,4 +1,4 @@
-package java;
+package myopenai;
 
 import java.util.Map;
 

@@ -6,12 +6,12 @@ import io.javalin.openapi.OpenApiContent;
 import io.javalin.openapi.OpenApiRequestBody;
 import io.javalin.openapi.OpenApiResponse;
 
-import java.ErrorResponse;
-import java.user.NewUserRequest;
+import myopenai.ErrorResponse;
+import myopenai.user.NewUserRequest;
 import java.util.List;
 import java.util.Optional;
 
-import java.ErrorResponse;
+import myopenai.ErrorResponse;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.openapi.*;
@@ -25,11 +25,11 @@ public class SalesController {
     }
 
     @OpenApi(
-        summary = "Create user",
-        operationId = "createUser",
-        path = "/users",
-        methods = HttpMethod.POST,
-        tags = {"User"},
+        summary = "Create sale",
+        operationId = "createSale",
+        path = "/sales",
+        methods = HttpMethod.GET,
+        tags = {"Sale"},
         requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
         responses = {
             @OpenApiResponse(status = "201"),

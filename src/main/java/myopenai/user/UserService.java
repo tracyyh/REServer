@@ -1,4 +1,4 @@
-package java.user;
+package myopenai.user;
 
 import java.util.Collection;
 import java.util.HashMap;

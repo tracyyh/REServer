@@ -1,6 +1,6 @@
-package java.user;
+package myopenai.user;
 
-import java.ErrorResponse;
+import myopenai.ErrorResponse;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.openapi.*;

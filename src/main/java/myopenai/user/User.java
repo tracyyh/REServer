@@ -1,4 +1,4 @@
-package java.user;
+package myopenai.user;
 
 public class User {
     private int id;
