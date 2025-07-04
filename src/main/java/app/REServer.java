@@ -1,4 +1,5 @@
 package app;
+
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
 import sales.SalesDAO;

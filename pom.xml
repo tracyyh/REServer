@@ -29,6 +29,11 @@
     </dependencies>
     <dependencyManagement>
         <dependencies>
+                <dependency>
+        <groupId>com.github.mauricioaniche</groupId>
+        <artifactId>ck</artifactId>
+        <version>0.7.1</version>
+        </dependency>
             <dependency>
                 <groupId>org.mongodb</groupId>
                 <artifactId>mongodb-driver-bom</artifactId>
@@ -53,7 +58,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>database.MongoClientConnectionExample</mainClass>
+                                    <mainClass>app.REserver</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
