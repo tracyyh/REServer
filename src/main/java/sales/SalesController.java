@@ -28,8 +28,8 @@ public class SalesController {
         summary = "Create sale",
         operationId = "createSale",
         path = "/sales",
-        methods = HttpMethod.GET,
-        tags = {"Sale"},
+        methods = HttpMethod.POST,
+        tags = {"Sales"},
         requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
         responses = {
             @OpenApiResponse(status = "201"),
@@ -54,11 +54,11 @@ public class SalesController {
     }
 
     @OpenApi(
-        summary = "Create user",
-        operationId = "createUser",
-        path = "/users",
-        methods = HttpMethod.POST,
-        tags = {"User"},
+        summary = "Get all sales",
+        operationId = "getAllSales",
+        path = "/sales",
+        methods = HttpMethod.GET,
+        tags = {"Sales"},
         requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
         responses = {
             @OpenApiResponse(status = "201"),
@@ -77,11 +77,11 @@ public class SalesController {
     }
 
     @OpenApi(
-        summary = "Create user",
-        operationId = "createUser",
-        path = "/users",
-        methods = HttpMethod.POST,
-        tags = {"User"},
+        summary = "Get sale by ID",
+        operationId = "getSaleByID",
+        path = "/sales/{saleID}",
+        methods = HttpMethod.GET,
+        tags = {"Sales"},
         requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
         responses = {
             @OpenApiResponse(status = "201"),
@@ -97,11 +97,11 @@ public class SalesController {
     }
 
     @OpenApi(
-        summary = "Create user",
-        operationId = "createUser",
-        path = "/users",
-        methods = HttpMethod.POST,
-        tags = {"User"},
+        summary = "Find sale by post code",
+        operationId = "findSaleByPostcode",
+        path = "/sales/postcode/{postcode}",
+        methods = HttpMethod.GET,
+        tags = {"Sales"},
         requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
         responses = {
             @OpenApiResponse(status = "201"),
@@ -119,6 +119,18 @@ public class SalesController {
         }
     }
 
+    @OpenApi(
+        summary = "Get sales by price range",
+        operationId = "pricerange",
+        path = "/sales/price/{low}/{high}",
+        methods = HttpMethod.GET,
+        tags = {"Sales"},
+        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
+        responses = {
+            @OpenApiResponse(status = "201"),
+            @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
+        }
+    )
     public void getSalesByPriceRange(Context ctx, String low, String high) {
         try {
             int lowPrice = Integer.parseInt(low);
