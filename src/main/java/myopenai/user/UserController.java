@@ -8,18 +8,18 @@ import io.javalin.openapi.*;
 // This is a controller, it should contain logic related to client/server IO
 public class UserController {
 
-    @OpenApi(
-        summary = "Create user",
-        operationId = "createUser",
-        path = "/users",
-        methods = HttpMethod.POST,
-        tags = {"User"},
-        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
-        responses = {
-            @OpenApiResponse(status = "201"),
-            @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
-        }
-    )
+    // @OpenApi(
+    //     summary = "Create user",
+    //     operationId = "createUser",
+    //     path = "/users",
+    //     methods = HttpMethod.POST,
+    //     tags = {"User"},
+    //     requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
+    //     responses = {
+    //         @OpenApiResponse(status = "201"),
+    //         @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
+    //     }
+    // )
     public static void create(Context ctx) {
         NewUserRequest user = ctx.bodyAsClass(NewUserRequest.class);
         UserService.save(user.getName(), user.getEmail());

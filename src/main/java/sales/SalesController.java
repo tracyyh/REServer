@@ -1,13 +1,11 @@
 package sales;
 
 import io.javalin.http.Context;
-import io.javalin.openapi.OpenApi;
-import io.javalin.openapi.OpenApiContent;
-import io.javalin.openapi.OpenApiRequestBody;
-import io.javalin.openapi.OpenApiResponse;
-
 import myopenai.ErrorResponse;
 import myopenai.user.NewUserRequest;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -145,6 +143,93 @@ public class SalesController {
             }
         } catch (NumberFormatException e) {
             error(ctx, "Invalid price range format", 400);
+        }
+    }
+
+    @OpenApi(
+        summary = "Get average price by postcode",
+        operationId = "pricerange",
+        path = "/sales/postcode/{postcode}/average",
+        methods = HttpMethod.GET,
+        tags = {"Price"},
+        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
+        responses = {
+            @OpenApiResponse(status = "201"),
+            @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
+        }
+    )
+    public void getAvgPriceByPostCode(Context ctx, String postCode) {
+        int avgPrice = homeSales.getAvgPriceByPostCode(Integer.parseInt(postCode));
+        if (avgPrice == -1) {
+            ctx.result("No sales for postcode found");
+            ctx.status(404);
+        } else {
+            ctx.json(avgPrice);
+            ctx.status(200);
+        }
+    }
+
+    @OpenApi(
+        summary = "Sort sales by price",
+        operationId = "pricerange",
+        path = "/sort/price",
+        methods = HttpMethod.GET,
+        tags = {"Price"},
+        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
+        responses = {
+            @OpenApiResponse(status = "201"),
+            @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
+        }
+    )
+    public void sortSalesByPrice(Context ctx) {
+        List <HomeSale> sortedSales = homeSales.getAllSales();
+        sortedSales.sort((HomeSale sale1, HomeSale sale2) -> sale1.purchase_price - sale2.purchase_price);
+        if (sortedSales.isEmpty()) {
+            ctx.result("No Sales Found");
+            ctx.status(404);
+        } else {
+            ctx.json(sortedSales);
+            ctx.status(200);
+        }
+    }
+
+    @OpenApi(
+        summary = "Sort sales by price per area",
+        operationId = "pricerange",
+        path = "/sort/price-per-area",
+        methods = HttpMethod.GET,
+        tags = {"Price"},
+        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
+        responses = {
+            @OpenApiResponse(status = "201"),
+            @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
+        }
+    )
+    public void sortSalesByPricePerArea(Context ctx) {
+        List <HomeSale> allSales = homeSales.getAllSales();
+        Iterator<HomeSale> salesIterator = allSales.iterator();
+
+        List<HomeSale> salesWithArea = new ArrayList<>();
+        
+        while (salesIterator.hasNext()) {
+            HomeSale sale = salesIterator.next();
+            if (sale.area != 0) {
+                salesWithArea.add(sale);
+            } 
+        }
+        
+        salesWithArea.sort((HomeSale sale1, HomeSale sale2) -> {
+            int sale1PricePerArea = sale1.purchase_price/sale1.area;
+            int sale2PricePerArea = sale2.purchase_price/sale2.area;
+            return sale1PricePerArea - sale2PricePerArea;
+        });
+
+        if (salesWithArea.isEmpty()) {
+            ctx.result("No Sales Found");
+            ctx.status(404);
+        } else {
+            ctx.json(salesWithArea);
+            ctx.status(200);
         }
     }
 

@@ -39,15 +39,15 @@ public class REServer2 {
 
             // API routes
             config.router.apiBuilder(() -> {
-                path("users", () -> {
-                    get(UserController::getAll);
-                    post(UserController::create);
-                    path("{userId}", () -> {
-                        get(UserController::getOne);
-                        patch(UserController::update);
-                        delete(UserController::delete);
-                    });
-                });
+                // path("users", () -> {
+                //     get(UserController::getAll);
+                //     post(UserController::create);
+                //     path("{userId}", () -> {
+                //         get(UserController::getOne);
+                //         patch(UserController::update);
+                //         delete(UserController::delete);
+                //     });
+                // });
             });
 
                 // // Sales routes

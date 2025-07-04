@@ -17,100 +17,125 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
+
 public class SalesDAO {
 
-    private MongoCollection<Document> collection;
+   private MongoCollection<Document> collection;
 
-    public SalesDAO() {
-        try {
-            ConnectionString connString = new ConnectionString("mongodb+srv://kulkarnisid:123@group5cluster.mygjmiu.mongodb.net/?retryWrites=true&w=majority&appName=Group5Cluster");
 
-            ServerApi serverApi = ServerApi.builder()
-                    .version(ServerApiVersion.V1)
-                    .build();
+   public SalesDAO() {
+       try {
+           ConnectionString connString = new ConnectionString("mongodb+srv://kulkarnisid:123@group5cluster.mygjmiu.mongodb.net/?retryWrites=true&w=majority&appName=Group5Cluster");
 
-            MongoClientSettings settings = MongoClientSettings.builder()
-                    .applyConnectionString(connString)
-                    .serverApi(serverApi)
-                    .build();
 
-            MongoClient mongoClient = MongoClients.create(settings);
+           ServerApi serverApi = ServerApi.builder()
+                   .version(ServerApiVersion.V1)
+                   .build();
 
-            MongoDatabase database = mongoClient.getDatabase("HomeSale"); 
-            collection = database.getCollection("Sales");
 
-        } catch (MongoException e) {
-            System.err.println("Failed to connect to MongoDB: " + e.getMessage());
+           MongoClientSettings settings = MongoClientSettings.builder()
+                   .applyConnectionString(connString)
+                   .serverApi(serverApi)
+                   .build();
+
+
+           MongoClient mongoClient = MongoClients.create(settings);
+
+
+           MongoDatabase database = mongoClient.getDatabase("HomeSale");
+           collection = database.getCollection("Sales");
+
+
+       } catch (MongoException e) {
+           System.err.println("Failed to connect to MongoDB: " + e.getMessage());
+       }
+   }
+
+
+   public boolean newSale(HomeSale homeSale) {
+       try {
+           Document doc = new Document("property_id", homeSale.property_id)
+                   .append("download_date", homeSale.download_date)
+                   .append("council_name", homeSale.council_name)
+                   .append("purchase_price", homeSale.purchase_price)
+                   .append("address", homeSale.address)
+                   .append("post_code", homeSale.post_code)
+                   .append("property_type", homeSale.property_type)
+                   .append("strata_lot_number", homeSale.strata_lot_number)
+                   .append("property_name", homeSale.property_name)
+                   .append("area", homeSale.area)
+                   .append("area_type", homeSale.area_type)
+                   .append("contract_date", homeSale.contract_date)
+                   .append("settlement_date", homeSale.settlement_date)
+                   .append("zoning", homeSale.zoning)
+                   .append("nature_of_property", homeSale.nature_of_property)
+                   .append("primary_purpose", homeSale.primary_purpose)
+                   .append("legal_description", homeSale.legal_description);
+           collection.insertOne(doc);
+           return true;
+       } catch (MongoException e) {
+           System.err.println("Error inserting document: " + e.getMessage());
+           return false;
+       }
+   }
+
+
+   public Optional<HomeSale> getSaleById(int propertyId) {
+       Document doc = collection.find(new Document("property_id", propertyId)).first();
+       if (doc != null) {
+           return Optional.of(documentToHomeSale(doc));
+       }
+       return Optional.empty();
+   }
+
+
+   public List<HomeSale> getSalesByPostCode(int postCode) {
+       List<HomeSale> result = new ArrayList<>();
+       try (MongoCursor<Document> cursor = collection.find(new Document("post_code", postCode)).iterator()) {
+           while (cursor.hasNext()) {
+               result.add(documentToHomeSale(cursor.next()));
+           }
+       }
+       return result;
+   }
+
+    public int getAvgPriceByPostCode(int postCode) {
+        List<HomeSale> sales = this.getSalesByPostCode(postCode);
+        if (sales.isEmpty()) {
+            return -1;
         }
+        long totalPrice = 0;
+        for (HomeSale sale : sales) {
+            totalPrice += sale.purchase_price;
+        }
+        long result = totalPrice / sales.size();
+        return (int) result;
     }
 
-    public boolean newSale(HomeSale homeSale) {
-        try {
-            Document doc = new Document("property_id", homeSale.property_id)
-                    .append("download_date", homeSale.download_date)
-                    .append("council_name", homeSale.council_name)
-                    .append("purchase_price", homeSale.purchase_price)
-                    .append("address", homeSale.address)
-                    .append("post_code", homeSale.post_code)
-                    .append("property_type", homeSale.property_type)
-                    .append("strata_lot_number", homeSale.strata_lot_number)
-                    .append("property_name", homeSale.property_name)
-                    .append("area", homeSale.area)
-                    .append("area_type", homeSale.area_type)
-                    .append("contract_date", homeSale.contract_date)
-                    .append("settlement_date", homeSale.settlement_date)
-                    .append("zoning", homeSale.zoning)
-                    .append("nature_of_property", homeSale.nature_of_property)
-                    .append("primary_purpose", homeSale.primary_purpose)
-                    .append("legal_description", homeSale.legal_description);
-            collection.insertOne(doc);
-            return true;
-        } catch (MongoException e) {
-            System.err.println("Error inserting document: " + e.getMessage());
-            return false;
-        }
-    }
 
-    public Optional<HomeSale> getSaleById(int propertyId) {
-        Document doc = collection.find(new Document("property_id", propertyId)).first();
-        if (doc != null) {
-            return Optional.of(documentToHomeSale(doc));
-        }
-        return Optional.empty();
-    }
+   public List<Integer> getAllSalePrices() {
+       List<Integer> prices = new ArrayList<>();
+       try (MongoCursor<Document> cursor = collection.find().iterator()) {
+           while (cursor.hasNext()) {
+               Document doc = cursor.next();
+               prices.add(doc.getInteger("purchase_price", 0));
+           }
+       }
+       return prices;
+   }
 
-    public List<HomeSale> getSalesByPostCode(int postCode) {
-        List<HomeSale> result = new ArrayList<>();
-        try (MongoCursor<Document> cursor = collection.find(new Document("post_code", postCode)).iterator()) {
-            while (cursor.hasNext()) {
-                result.add(documentToHomeSale(cursor.next()));
-            }
-        }
-        return result;
-    }
 
-    public List<Integer> getAllSalePrices() {
-        List<Integer> prices = new ArrayList<>();
-        try (MongoCursor<Document> cursor = collection.find().iterator()) {
-            while (cursor.hasNext()) {
-                Document doc = cursor.next();
-                prices.add(doc.getInteger("purchase_price", 0));
-            }
-        }
-        return prices;
-    }
-
-    public List<HomeSale> getAllSales() {
-        List<HomeSale> allSales = new ArrayList<>();
-        int count = 0;
-        try (MongoCursor<Document> cursor = collection.find().iterator()) {
-            while (cursor.hasNext() & count < 100) {
-                allSales.add(documentToHomeSale(cursor.next()));
-                count++;
-            }
-        }
-        return allSales;
-    }
+   public List<HomeSale> getAllSales() {
+       List<HomeSale> allSales = new ArrayList<>();
+       int count = 0;
+       try (MongoCursor<Document> cursor = collection.find().iterator()) {
+           while (cursor.hasNext() && count < 100) {
+               allSales.add(documentToHomeSale(cursor.next()));
+               count++;
+           }
+       }
+       return allSales;
+   }
 
     public List<HomeSale> getSalesByPriceRange(int low, int high) {
         List<HomeSale> salesInRange = new ArrayList<>();
@@ -121,7 +146,7 @@ public class SalesDAO {
             return salesInRange;
         }
         try (MongoCursor<Document> cursor = collection.find(new Document("purchase_price", new Document("$gte", low).append("$lte", high))).iterator()) {
-            while (cursor.hasNext() & count < 100) {
+            while (cursor.hasNext() && count < 100) {
                 salesInRange.add(documentToHomeSale(cursor.next()));
                 count++;
         }
@@ -132,19 +157,20 @@ public class SalesDAO {
     }
 
 
-    private int parseAreaField(Object areaValue) {
-    if (areaValue instanceof Integer) {
-        return (Integer) areaValue;
-    } else if (areaValue instanceof Double) {
-        return ((Double) areaValue).intValue();
-    } else if (areaValue instanceof String) {
-        try {
-            return (int) Double.parseDouble((String) areaValue);
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-    return 0; 
+
+   private int parseAreaField(Object areaValue) {
+   if (areaValue instanceof Integer) {
+       return (Integer) areaValue;
+   } else if (areaValue instanceof Double) {
+       return ((Double) areaValue).intValue();
+   } else if (areaValue instanceof String) {
+       try {
+           return (int) Double.parseDouble((String) areaValue);
+       } catch (NumberFormatException e) {
+           return 0;
+       }
+   }
+   return 0;
 }
     private String parseStringField(Object fieldValue) {
         if (fieldValue instanceof Integer) {
@@ -154,7 +180,6 @@ public class SalesDAO {
         }
         return ""; 
     }
-
 
     private HomeSale documentToHomeSale(Document doc) {
         return new HomeSale(
@@ -177,4 +202,6 @@ public class SalesDAO {
                 doc.getString("legal_description")
         );
     }
+
 }
+
