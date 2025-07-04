@@ -1,17 +1,12 @@
 package sales;
 
 import io.javalin.http.Context;
-import myopenai.ErrorResponse;
-import myopenai.user.NewUserRequest;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import myopenai.ErrorResponse;
-import io.javalin.http.Context;
-import io.javalin.http.NotFoundResponse;
 import io.javalin.openapi.*;
 
 public class SalesController {
@@ -28,7 +23,7 @@ public class SalesController {
         path = "/sales",
         methods = HttpMethod.POST,
         tags = {"Sales"},
-        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = NewUserRequest.class)}),
+        requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = HomeSale.class)}),
         responses = {
             @OpenApiResponse(status = "201"),
             @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
@@ -177,7 +172,7 @@ public class SalesController {
     )
     public void sortSalesByPrice(Context ctx) {
         List <HomeSale> sortedSales = homeSales.getAllSales();
-        sortedSales.sort((HomeSale sale1, HomeSale sale2) -> sale1.purchase_price - sale2.purchase_price);
+        sortedSales.sort((HomeSale sale1, HomeSale sale2) -> sale1.getPurchase_price() - sale2.getPurchase_price());
         if (sortedSales.isEmpty()) {
             ctx.result("No Sales Found");
             ctx.status(404);
@@ -206,14 +201,14 @@ public class SalesController {
         
         while (salesIterator.hasNext()) {
             HomeSale sale = salesIterator.next();
-            if (sale.area != 0) {
+            if (sale.getArea() != 0) {
                 salesWithArea.add(sale);
             } 
         }
         
         salesWithArea.sort((HomeSale sale1, HomeSale sale2) -> {
-            int sale1PricePerArea = sale1.purchase_price/sale1.area;
-            int sale2PricePerArea = sale2.purchase_price/sale2.area;
+            int sale1PricePerArea = sale1.getPurchase_price()/sale1.getArea();
+            int sale2PricePerArea = sale2.getPurchase_price()/sale2.getArea();
             return sale1PricePerArea - sale2PricePerArea;
         });
 

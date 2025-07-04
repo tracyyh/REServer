@@ -54,23 +54,23 @@ public class SalesDAO {
 
    public boolean newSale(HomeSale homeSale) {
        try {
-           Document doc = new Document("property_id", homeSale.property_id)
-                   .append("download_date", homeSale.download_date)
-                   .append("council_name", homeSale.council_name)
-                   .append("purchase_price", homeSale.purchase_price)
-                   .append("address", homeSale.address)
-                   .append("post_code", homeSale.post_code)
-                   .append("property_type", homeSale.property_type)
-                   .append("strata_lot_number", homeSale.strata_lot_number)
-                   .append("property_name", homeSale.property_name)
-                   .append("area", homeSale.area)
-                   .append("area_type", homeSale.area_type)
-                   .append("contract_date", homeSale.contract_date)
-                   .append("settlement_date", homeSale.settlement_date)
-                   .append("zoning", homeSale.zoning)
-                   .append("nature_of_property", homeSale.nature_of_property)
-                   .append("primary_purpose", homeSale.primary_purpose)
-                   .append("legal_description", homeSale.legal_description);
+           Document doc = new Document("property_id", homeSale.getProperty_id())
+                   .append("download_date", homeSale.getDownload_date())
+                   .append("council_name", homeSale.getCouncil_name())
+                   .append("purchase_price", homeSale.getPurchase_price())
+                   .append("address", homeSale.getAddress())
+                   .append("post_code", homeSale.getPost_code())
+                   .append("property_type", homeSale.getProperty_type())
+                   .append("strata_lot_number", homeSale.getStrata_lot_number())
+                   .append("property_name", homeSale.getProperty_name())
+                   .append("area", homeSale.getArea())
+                   .append("area_type", homeSale.getArea_type())
+                   .append("contract_date", homeSale.getContract_date())
+                   .append("settlement_date", homeSale.getSettlement_date())
+                   .append("zoning", homeSale.getZoning())
+                   .append("nature_of_property", homeSale.getNature_of_property())
+                   .append("primary_purpose", homeSale.getPrimary_purpose())
+                   .append("legal_description", homeSale.getLegal_description());
            collection.insertOne(doc);
            return true;
        } catch (MongoException e) {
@@ -106,7 +106,7 @@ public class SalesDAO {
         }
         long totalPrice = 0;
         for (HomeSale sale : sales) {
-            totalPrice += sale.purchase_price;
+            totalPrice += sale.getPurchase_price();
         }
         long result = totalPrice / sales.size();
         return (int) result;

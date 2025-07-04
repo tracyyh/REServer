@@ -1,4 +1,4 @@
-package myopenai;
+package sales;
 
 import java.util.Map;
 
