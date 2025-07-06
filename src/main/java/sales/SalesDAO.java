@@ -20,7 +20,8 @@ import com.mongodb.client.MongoDatabase;
 
 public class SalesDAO {
 
-   private MongoCollection<Document> collection;
+   private MongoCollection<Document> salesCollection;
+   private MongoCollection<Document> salesQueryCollection;
 
 
    public SalesDAO() {
@@ -43,7 +44,8 @@ public class SalesDAO {
 
 
            MongoDatabase database = mongoClient.getDatabase("HomeSale");
-           collection = database.getCollection("Sales");
+           salesCollection = database.getCollection("Sales");
+           salesQueryCollection = database.getCollection("SalesQuery");
 
 
        } catch (MongoException e) {
@@ -71,7 +73,7 @@ public class SalesDAO {
                    .append("nature_of_property", homeSale.nature_of_property)
                    .append("primary_purpose", homeSale.primary_purpose)
                    .append("legal_description", homeSale.legal_description);
-           collection.insertOne(doc);
+           salesCollection.insertOne(doc);
            return true;
        } catch (MongoException e) {
            System.err.println("Error inserting document: " + e.getMessage());
@@ -81,7 +83,7 @@ public class SalesDAO {
 
 
    public Optional<HomeSale> getSaleById(int propertyId) {
-       Document doc = collection.find(new Document("property_id", propertyId)).first();
+       Document doc = salesCollection.find(new Document("property_id", propertyId)).first();
        if (doc != null) {
            return Optional.of(documentToHomeSale(doc));
        }
@@ -91,7 +93,7 @@ public class SalesDAO {
 
    public List<HomeSale> getSalesByPostCode(int postCode) {
        List<HomeSale> result = new ArrayList<>();
-       try (MongoCursor<Document> cursor = collection.find(new Document("post_code", postCode)).iterator()) {
+       try (MongoCursor<Document> cursor = salesCollection.find(new Document("post_code", postCode)).iterator()) {
            while (cursor.hasNext()) {
                result.add(documentToHomeSale(cursor.next()));
            }
@@ -115,7 +117,7 @@ public class SalesDAO {
 
    public List<Integer> getAllSalePrices() {
        List<Integer> prices = new ArrayList<>();
-       try (MongoCursor<Document> cursor = collection.find().iterator()) {
+       try (MongoCursor<Document> cursor = salesCollection.find().iterator()) {
            while (cursor.hasNext()) {
                Document doc = cursor.next();
                prices.add(doc.getInteger("purchase_price", 0));
@@ -128,7 +130,7 @@ public class SalesDAO {
    public List<HomeSale> getAllSales() {
        List<HomeSale> allSales = new ArrayList<>();
        int count = 0;
-       try (MongoCursor<Document> cursor = collection.find().iterator()) {
+       try (MongoCursor<Document> cursor = salesCollection.find().iterator()) {
            while (cursor.hasNext() && count < 100) {
                allSales.add(documentToHomeSale(cursor.next()));
                count++;
@@ -145,7 +147,7 @@ public class SalesDAO {
             System.err.println("sales:" + salesInRange);
             return salesInRange;
         }
-        try (MongoCursor<Document> cursor = collection.find(new Document("purchase_price", new Document("$gte", low).append("$lte", high))).iterator()) {
+        try (MongoCursor<Document> cursor = salesCollection.find(new Document("purchase_price", new Document("$gte", low).append("$lte", high))).iterator()) {
             while (cursor.hasNext() && count < 100) {
                 salesInRange.add(documentToHomeSale(cursor.next()));
                 count++;
