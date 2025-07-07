@@ -47,7 +47,6 @@ public class SalesController {
 
     // implements GET /sales/{saleID}
     public void getSaleByID(Context ctx, String id) {
-
         Optional<HomeSale> sale = homeSales.getSaleById(Integer.parseInt(id));
         sale.map(ctx::json)
                 .orElseGet (() -> error (ctx, "Sale not found", 404));

@@ -112,9 +112,18 @@ public class SalesDAO {
 
     public int getAvgPriceByPostCode(int postCode) {
         List<HomeSale> sales = this.getSalesByPostCode(postCode);
+
+        Document queryDoc = new Document("queryType", "GET")
+        .append("queryDateTime", LocalDateTime.now().toString())
+        .append("params", "postcode=" + postCode)
+        .append("status", sales.isEmpty() ? 200 : 404);
+
+        salesQueryCollection.insertOne(queryDoc);
+
         if (sales.isEmpty()) {
             return -1;
         }
+
         long totalPrice = 0;
         for (HomeSale sale : sales) {
             totalPrice += sale.purchase_price;

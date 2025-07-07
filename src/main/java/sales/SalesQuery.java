@@ -1,9 +1,10 @@
 package sales;
 
+import java.time.LocalDateTime;
+
 public class SalesQuery {
-    private int queryID;
     private String queryType;
-    private String queryDatetime;
+    private LocalDateTime queryDateTime;
     private String params;
     private int status;
 
@@ -11,10 +12,9 @@ public class SalesQuery {
         // Default constructor
     }
 
-    public SalesQuery(int queryID, String queryType, String queryDatetime, String params, int status) {
-        this.queryID = queryID;
+    public SalesQuery(String queryType, LocalDateTime queryDateTime, String params, int status) {
         this.queryType = queryType;
-        this.queryDatetime = queryDatetime;
+        this.queryDateTime = queryDateTime;
         this.params = params;
         this.status = status;
     }
