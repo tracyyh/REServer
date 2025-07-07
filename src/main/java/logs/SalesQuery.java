@@ -1,4 +1,4 @@
-package sales;
+package logs;
 
 public class SalesQuery {
     private int queryID;

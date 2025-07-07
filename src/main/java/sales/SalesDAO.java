@@ -156,8 +156,6 @@ public class SalesDAO {
         return salesInRange;
     }
 
-
-
    private int parseAreaField(Object areaValue) {
    if (areaValue instanceof Integer) {
        return (Integer) areaValue;
