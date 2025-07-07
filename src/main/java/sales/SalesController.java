@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+
 import io.javalin.http.Context;
 
 public class SalesController {
@@ -132,6 +133,18 @@ public class SalesController {
             ctx.status(404);
         } else {
             ctx.json(salesWithArea);
+            ctx.status(200);
+        }
+    }
+
+    // Implements GET /sales/price/{low}/{high}
+    public void getSalesByPriceRange(Context ctx, int low, int high) {
+        List<HomeSale> salesInRange = homeSales.getSalesByPriceRange(low, high);
+        if (salesInRange.isEmpty()) {
+            ctx.result("No sales found in the specified price range");
+            ctx.status(404);
+        } else {
+            ctx.json(salesInRange);
             ctx.status(200);
         }
     }

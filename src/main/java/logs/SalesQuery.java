@@ -1,4 +1,4 @@
-package sales;
+package logs;
 
 import java.time.LocalDateTime;
 
