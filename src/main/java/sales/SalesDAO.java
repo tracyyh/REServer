@@ -103,6 +103,10 @@ public class SalesDAO {
                result.add(documentToHomeSale(cursor.next()));
            }
        }
+       Document query = new Document("queryType", "get").append("queryDatetime", LocalDateTime.now().toString())
+                .append("params", "post_code=" + postCode)
+                .append("status", result != null ? 200 : 404);
+       salesQueryCollection.insertOne(query);
        return result;
    }
 
