@@ -85,10 +85,6 @@ public class SalesDAO {
 
    public Optional<HomeSale> getSaleById(int propertyId) {
        Document doc = salesCollection.find(new Document("property_id", propertyId)).first();
-       Document query = new Document("queryType", "get").append("queryDatetime", LocalDateTime.now().toString())
-                .append("params", "property_id=" + propertyId)
-                .append("status", doc != null ? 200 : 404);
-       salesQueryCollection.insertOne(query);
        if (doc != null) {
            return Optional.of(documentToHomeSale(doc));
        }
@@ -103,6 +99,10 @@ public class SalesDAO {
                result.add(documentToHomeSale(cursor.next()));
            }
        }
+       Document query = new Document("queryType", "get").append("queryDatetime", LocalDateTime.now().toString())
+                .append("params", "post_code=" + postCode)
+                .append("status", result != null ? 200 : 404);
+       salesQueryCollection.insertOne(query);
        return result;
    }
 
