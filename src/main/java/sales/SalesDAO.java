@@ -225,12 +225,14 @@ public int newSale(HomeSale homeSale) {
             System.err.println("sales:" + salesInRange);
             return salesInRange;
         }
-        try (MongoCursor<Document> cursor = salesCollection.find(new Document("purchase_price", new Document("$gte", low).append("$lte", high))).iterator()) {
-            while (cursor.hasNext() && count < 100) {
-                salesInRange.add(documentToHomeSale(cursor.next()));
+        try (Statement stmt = connection.createStatement()) {
+            String sqlStr = "SELECT * from sales WHERE purchase_price >= " + low + " AND purchase_price <= " + high;
+            ResultSet rs = stmt.executeQuery(sqlStr);
+            while (rs.next() && count < 100) {
+                salesInRange.add(documentToHomeSale(rs));
                 count++;
-        }
-        } catch (MongoException e) {
+            }
+        } catch (SQLException e) {
             System.err.println("Error retrieving sales by price range: " + e.getMessage());
         }
         return salesInRange;
