@@ -185,17 +185,19 @@ public int newSale(HomeSale homeSale) {
         return (int) result;
     }
 
-
    public List<Integer> getAllSalePrices() {
-    
-       List<Integer> prices = new ArrayList<>();
+        List<Integer> prices = new ArrayList<>();
+        try {
+            Statement stmt = this.connection.createStatement();
+            String sqlStr = "SELECT purchase_price FROM sales";
+            ResultSet rs = stmt.executeQuery(sqlStr);
+            while (rs.next()) {
+                prices.add(rs.getInt("purchase_price"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-       try (MongoCursor<Document> cursor = salesCollection.find().iterator()) {
-           while (cursor.hasNext()) {
-               Document doc = cursor.next();
-               prices.add(doc.getInteger("purchase_price", 0));
-           }
-       }
        return prices;
    }
 
@@ -224,11 +226,13 @@ public int newSale(HomeSale homeSale) {
             System.err.println("sales:" + salesInRange);
             return salesInRange;
         }
+
         try (MongoCursor<Document> cursor = salesCollection.find(new Document("purchase_price", new Document("$gte", low).append("$lte", high))).iterator()) {
             while (cursor.hasNext() && count < 100) {
                 salesInRange.add(documentToHomeSale(cursor.next()));
                 count++;
         }
+        
         } catch (MongoException e) {
             System.err.println("Error retrieving sales by price range: " + e.getMessage());
         }
