@@ -26,14 +26,19 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.7</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
-                <dependency>
-        <groupId>com.github.mauricioaniche</groupId>
-        <artifactId>ck</artifactId>
-        <version>0.7.1</version>
-        </dependency>
+            <dependency>
+                <groupId>com.github.mauricioaniche</groupId>
+                <artifactId>ck</artifactId>
+                <version>0.7.1</version>
+            </dependency>
             <dependency>
                 <groupId>org.mongodb</groupId>
                 <artifactId>mongodb-driver-bom</artifactId>

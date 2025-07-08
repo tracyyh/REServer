@@ -1,7 +1,5 @@
 package sales;
 
-import static com.mongodb.client.model.Filters.regex;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -29,20 +27,13 @@ public class SalesDAO {
    public SalesDAO() {
     try {
         // Connect to Neon PostgreSQL database using JDBC
-        String url = "jdbc:postgresql://ep-lively-water-a7ymgkuo-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+        String url = "jdbc:postgresql://ep-wild-cherry-a7rmik76-pooler.ap-southeast-2.aws.neon.tech/neondb?user=neondb_owner&password=npg_7MXptljGJe0D&sslmode=require&channelBinding=require";
         String user = "neondb_owner";
         String password = "npg_HavSVn2Zy6bi";
  
-        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+        try {
+            this.connection = DriverManager.getConnection(url, user, password);
             System.out.println("Connected to Neon database!");
-
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT version()");
-
-            while (rs.next()) {
-                System.out.println("PostgreSQL version: " + rs.getString(1));
-            }
-            this.connection = conn;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -151,14 +142,16 @@ public int newSale(HomeSale homeSale) {
 
 
    public Optional<HomeSale> getSaleById(int propertyId) {
-       Document doc = salesCollection.find(new Document("property_id", propertyId)).first();
-       Document query = new Document("queryType", "get").append("queryDatetime", LocalDateTime.now().toString())
-                .append("params", "property_id=" + propertyId)
-                .append("status", doc != null ? 200 : 404);
-       salesQueryCollection.insertOne(query);
-       if (doc != null) {
-           return Optional.of(documentToHomeSale(doc));
-       }
+        try {
+            Statement stmt = this.connection.createStatement();
+            String sqlStr = "SELECT * from sales WHERE property_id = " + propertyId;
+            ResultSet rs = stmt.executeQuery(sqlStr);
+            while (rs.next()) {
+                return Optional.of(documentToHomeSale(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error executing query: " + e.getMessage());
+        }
        return Optional.empty();
    }
 
@@ -167,7 +160,7 @@ public int newSale(HomeSale homeSale) {
        List<HomeSale> result = new ArrayList<>();
        try (MongoCursor<Document> cursor = salesCollection.find(new Document("post_code", postCode)).iterator()) {
            while (cursor.hasNext()) {
-               result.add(documentToHomeSale(cursor.next()));
+                result.add(documentToHomeSale(cursor.next()));
            }
        }
        Document query = new Document("queryType", "get").append("queryDatetime", LocalDateTime.now().toString())
@@ -210,13 +203,17 @@ public int newSale(HomeSale homeSale) {
    public List<HomeSale> getAllSales() {
        List<HomeSale> allSales = new ArrayList<>();
        int count = 0;
-       try (MongoCursor<Document> cursor = salesCollection.find().iterator()) {
-           while (cursor.hasNext() && count < 100) {
-               allSales.add(documentToHomeSale(cursor.next()));
-               count++;
-           }
-       }
-       return allSales;
+       try (Statement stmt = connection.createStatement()) {
+            String sqlStr = "SELECT * from sales";
+            ResultSet rs = stmt.executeQuery(sqlStr);
+            while (rs.next() && count < 100) {
+                allSales.add(documentToHomeSale(rs));
+                count++;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error executing query: " + e.getMessage());
+        }
+        return allSales;
    }
 
     public List<HomeSale> getSalesByPriceRange(int low, int high) {
