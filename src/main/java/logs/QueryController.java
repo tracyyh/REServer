@@ -1,5 +1,6 @@
 package logs;
 
+
 import io.javalin.http.Context;
 
 public class QueryController {
@@ -10,7 +11,7 @@ public class QueryController {
         this.salesQueries = salesQueries;
     }
 
-    // Implements GET /metrics/postcode-count/{postcode}
+        // Implements GET /sales/metrics/postcode-count/{postcode}
     public void getPostcodeCount(Context ctx, int postcode) {
         int count = salesQueries.getPostcodeCount(postcode);
         if (count == -1) {
@@ -22,7 +23,6 @@ public class QueryController {
         }
     }
 
-    // Implements GET /metrics/property-count/{saleID}
     public void getPropertyCount(Context ctx, int saleID) {
         int count = salesQueries.getPropertyCount(saleID);
         if (count == -1) {
