@@ -12,13 +12,9 @@ import java.util.Optional;
 
 import org.bson.Document;
 
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoException;
-
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
 
 
 public class SalesDAO {
@@ -56,47 +52,46 @@ public class SalesDAO {
 
 
 public int newSale(HomeSale homeSale) {
-    String sqlStr = """
-        INSERT INTO home_sales (
-            property_id,
-            download_date,
-            council_name,
-            purchase_price,
-            address,
-            post_code,
-            property_type,
-            strata_lot_number,
-            property_name,
-            area,
-            area_type,
-            contract_date,
-            settlement_date,
-            zoning,
-            nature_of_property,
-            primary_purpose,
-            legal_description
-        ) VALUES (
-            %d, '%s', '%s', %d, '%s', %d, '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s'
-        );
-        """.formatted(
-            homeSale.property_id,
-            homeSale.download_date,
-            homeSale.council_name,
-            homeSale.purchase_price,
-            homeSale.address,
-            homeSale.post_code,
-            homeSale.property_type,
-            homeSale.strata_lot_number,
-            homeSale.property_name,
-            homeSale.area,
-            homeSale.area_type,
-            homeSale.contract_date,
-            homeSale.settlement_date,
-            homeSale.zoning,
-            homeSale.nature_of_property,
-            homeSale.primary_purpose,
-            homeSale.legal_description
-        );
+    String sqlStr = String.format(
+        "INSERT INTO home_sales (" +
+            "property_id," +
+            "download_date," +
+            "council_name," +
+            "purchase_price," +
+            "address," +
+            "post_code," +
+            "property_type," +
+            "strata_lot_number," +
+            "property_name," +
+            "area," +
+            "area_type," +
+            "contract_date," +
+            "settlement_date," +
+            "zoning," +
+            "nature_of_property," +
+            "primary_purpose," +
+            "legal_description" +
+        ") VALUES (" +
+            "%d, '%s', '%s', %d, '%s', %d, '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s'" +
+        ");",
+        homeSale.property_id,
+        homeSale.download_date,
+        homeSale.council_name,
+        homeSale.purchase_price,
+        homeSale.address,
+        homeSale.post_code,
+        homeSale.property_type,
+        homeSale.strata_lot_number,
+        homeSale.property_name,
+        homeSale.area,
+        homeSale.area_type,
+        homeSale.contract_date,
+        homeSale.settlement_date,
+        homeSale.zoning,
+        homeSale.nature_of_property,
+        homeSale.primary_purpose,
+        homeSale.legal_description
+    );
     try (Statement stmt = this.connection.createStatement()) {
         ResultSet rs = stmt.executeQuery(sqlStr);
         while (rs.next()) {
