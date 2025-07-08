@@ -1,5 +1,7 @@
 package sales;
 
+import static com.mongodb.client.model.Filters.regex;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -192,7 +194,9 @@ public int newSale(HomeSale homeSale) {
 
 
    public List<Integer> getAllSalePrices() {
+    
        List<Integer> prices = new ArrayList<>();
+
        try (MongoCursor<Document> cursor = salesCollection.find().iterator()) {
            while (cursor.hasNext()) {
                Document doc = cursor.next();
@@ -257,26 +261,27 @@ public int newSale(HomeSale homeSale) {
         return ""; 
     }
 
-    private HomeSale documentToHomeSale(Document doc) {
+    private HomeSale documentToHomeSale(ResultSet rs) throws SQLException {
         return new HomeSale(
-                (doc.get("property_id") instanceof Integer ? doc.getInteger("property_id", 0) :  Integer.parseInt(doc.getString("property_id"))),
-                doc.getString("download_date"),
-                parseStringField(doc.get("council_name")),
-                doc.getInteger("purchase_price", 0),
-                doc.getString("address"),
-                doc.getInteger("post_code", 0),
-                doc.getString("property_type"),
-                (doc.get("strata_lot_number") instanceof Integer ? Integer.toString(doc.getInteger("strata_lot_number")) : doc.getString("strata_lot_number")),
-                doc.getString("property_name"),
-                parseAreaField(doc.get("area")),
-                doc.getString("area_type"),
-                doc.getString("contract_date"),
-                doc.getString("settlement_date"),
-                doc.getString("zoning"),
-                (doc.get("nature_of_property") instanceof Integer ? Integer.toString(doc.getInteger("nature_of_property")) : doc.getString("nature_of_property")),    
-                doc.getString("primary_purpose"),
-                doc.getString("legal_description")
+                (rs.getObject("property_id") instanceof Integer ? rs.getInt("property_id") :  Integer.parseInt(rs.getString("property_id"))),
+                rs.getString("download_date"),
+                parseStringField(rs.getObject("council_name")),
+                rs.getInt("purchase_price"),
+                rs.getString("address"),
+                rs.getInt("post_code"),
+                rs.getString("property_type"),
+                (rs.getObject("strata_lot_number") instanceof Integer ? Integer.toString(rs.getInt("strata_lot_number")) : rs.getString("strata_lot_number")),
+                rs.getString("property_name"),
+                parseAreaField(rs.getObject("area")),
+                rs.getString("area_type"),
+                rs.getString("contract_date"),
+                rs.getString("settlement_date"),
+                rs.getString("zoning"),
+                (rs.getObject("nature_of_property") instanceof Integer ? Integer.toString(rs.getInt("nature_of_property")) : rs.getString("nature_of_property")),    
+                rs.getString("primary_purpose"),
+                rs.getString("legal_description")
         );
+        
     }
 
 }

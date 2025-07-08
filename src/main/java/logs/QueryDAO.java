@@ -15,7 +15,6 @@ public class QueryDAO {
 
    private MongoCollection<Document> collection;
 
-
    public QueryDAO() {
     try {
         // Connect to Neon PostgreSQL database using JDBC
