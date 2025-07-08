@@ -1,5 +1,10 @@
 package sales;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +15,7 @@ import org.bson.Document;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoException;
-import com.mongodb.ServerApi;
-import com.mongodb.ServerApiVersion;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
+
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -23,64 +25,132 @@ public class SalesDAO {
 
    private MongoCollection<Document> salesCollection;
    private MongoCollection<Document> salesQueryCollection;
+   private Connection connection;
 
 
    public SalesDAO() {
-       try {
-           ConnectionString connString = new ConnectionString("mongodb+srv://kulkarnisid:123@group5cluster.mygjmiu.mongodb.net/?retryWrites=true&w=majority&appName=Group5Cluster");
+    try {
+        // Connect to Neon PostgreSQL database using JDBC
+        String url = "jdbc:postgresql://ep-lively-water-a7ymgkuo-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+        String user = "neondb_owner";
+        String password = "npg_HavSVn2Zy6bi";
+ 
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            System.out.println("Connected to Neon database!");
+
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT version()");
+
+            while (rs.next()) {
+                System.out.println("PostgreSQL version: " + rs.getString(1));
+            }
+            this.connection = conn;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("Connected to Neon PostgreSQL database (JDBC).");
+        } catch (Exception e) {
+            System.err.println("Failed to connect to Neon PostgreSQL: " + e.getMessage());
+        }
+    }
 
 
-           ServerApi serverApi = ServerApi.builder()
-                   .version(ServerApiVersion.V1)
-                   .build();
-
-
-           MongoClientSettings settings = MongoClientSettings.builder()
-                   .applyConnectionString(connString)
-                   .serverApi(serverApi)
-                   .build();
-
-
-           MongoClient mongoClient = MongoClients.create(settings);
-
-
-           MongoDatabase database = mongoClient.getDatabase("HomeSale");
-           salesCollection = database.getCollection("Sales");
-           salesQueryCollection = database.getCollection("SalesQuery");
-
-
-       } catch (MongoException e) {
-           System.err.println("Failed to connect to MongoDB: " + e.getMessage());
-       }
-   }
-
-
-   public boolean newSale(HomeSale homeSale) {
-       try {
-           Document doc = new Document("property_id", homeSale.property_id)
-                   .append("download_date", homeSale.download_date)
-                   .append("council_name", homeSale.council_name)
-                   .append("purchase_price", homeSale.purchase_price)
-                   .append("address", homeSale.address)
-                   .append("post_code", homeSale.post_code)
-                   .append("property_type", homeSale.property_type)
-                   .append("strata_lot_number", homeSale.strata_lot_number)
-                   .append("property_name", homeSale.property_name)
-                   .append("area", homeSale.area)
-                   .append("area_type", homeSale.area_type)
-                   .append("contract_date", homeSale.contract_date)
-                   .append("settlement_date", homeSale.settlement_date)
-                   .append("zoning", homeSale.zoning)
-                   .append("nature_of_property", homeSale.nature_of_property)
-                   .append("primary_purpose", homeSale.primary_purpose)
-                   .append("legal_description", homeSale.legal_description);
-           salesCollection.insertOne(doc);
-           return true;
-       } catch (MongoException e) {
-           System.err.println("Error inserting document: " + e.getMessage());
-           return false;
-       }
-   }
+public int newSale(HomeSale homeSale) {
+    String sqlStr = """
+        INSERT INTO home_sales (
+            property_id,
+            download_date,
+            council_name,
+            purchase_price,
+            address,
+            post_code,
+            property_type,
+            strata_lot_number,
+            property_name,
+            area,
+            area_type,
+            contract_date,
+            settlement_date,
+            zoning,
+            nature_of_property,
+            primary_purpose,
+            legal_description
+        ) VALUES (
+            %d, '%s', '%s', %d, '%s', %d, '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s'
+        );
+        """.formatted(
+            homeSale.property_id,
+            homeSale.download_date,
+            homeSale.council_name,
+            homeSale.purchase_price,
+            homeSale.address,
+            homeSale.post_code,
+            homeSale.property_type,
+            homeSale.strata_lot_number,
+            homeSale.property_name,
+            homeSale.area,
+            homeSale.area_type,
+            homeSale.contract_date,
+            homeSale.settlement_date,
+            homeSale.zoning,
+            homeSale.nature_of_property,
+            homeSale.primary_purpose,
+            homeSale.legal_description
+        );
+    try (Statement stmt = this.connection.createStatement()) {
+        ResultSet rs = stmt.executeQuery(sqlStr);
+        while (rs.next()) {
+            String insertedPropertyId = rs.getString("property_id");
+            String insertedDownloadDate = rs.getString("download_date");
+            String insertedCouncilName = rs.getString("council_name");
+            String insertedPurchasePrice = rs.getString("purchase_price");
+            String insertedAddress = rs.getString("address");
+            String insertedPostCode = rs.getString("post_code");
+            String insertedPropertyType = rs.getString("property_type");
+            String insertedStrataLotNumber = rs.getString("strata_lot_number");
+            String insertedPropertyName = rs.getString("property_name");
+            String insertedArea = rs.getString("area");
+            String insertedAreaType = rs.getString("area_type");
+            String insertedContractDate = rs.getString("contract_date");
+            String insertedSettlementDate = rs.getString("settlement_date");
+            String insertedZoning = rs.getString("zoning");
+            String insertedNatureOfProperty = rs.getString("nature_of_property");
+            String insertedPrimaryPurpose = rs.getString("primary_purpose");
+            String insertedLegalDescription = rs.getString("legal_description");
+            System.out.println(
+                insertedPropertyId + ", " +
+                insertedDownloadDate + ", " +
+                insertedCouncilName + ", " +
+                insertedPurchasePrice + ", " +
+                insertedAddress + ", " +
+                insertedPostCode + ", " +
+                insertedPropertyType + ", " +
+                insertedStrataLotNumber + ", " +
+                insertedPropertyName + ", " +
+                insertedArea + ", " +
+                insertedAreaType + ", " +
+                insertedContractDate + ", " +
+                insertedSettlementDate + ", " +
+                insertedZoning + ", " +
+                insertedNatureOfProperty + ", " +
+                insertedPrimaryPurpose + ", " +
+                insertedLegalDescription
+            );
+        }
+    } catch (SQLException e) {
+        System.err.println(e);
+    }
+    return 200;
+}
+    public static void main(String[] args) {
+        SalesDAO salesDAO = new SalesDAO();
+        HomeSale sale = new HomeSale(
+            12345, "2023-10-01", "Test Council", 500000, "123 Test St", 3000,
+            "House", "1A", "Test Property", 200, "sqm", "2023-09-01",
+            "2023-10-15", "Residential", "1", "Primary Residence", "Lot 1"
+        );
+        salesDAO.newSale(sale);
+    }   
 
 
    public Optional<HomeSale> getSaleById(int propertyId) {

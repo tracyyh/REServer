@@ -25,7 +25,7 @@ public class SalesController {
                             .get();
 
         // store new sale in data set
-        if (homeSales.newSale(sale)) {
+        if (homeSales.newSale(sale) == 200) {
             ctx.result("Sale Created");
             ctx.status(201);
         } else {
