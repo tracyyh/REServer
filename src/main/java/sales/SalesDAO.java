@@ -158,15 +158,16 @@ public int newSale(HomeSale homeSale) {
 
    public List<HomeSale> getSalesByPostCode(int postCode) {
        List<HomeSale> result = new ArrayList<>();
-       try (MongoCursor<Document> cursor = salesCollection.find(new Document("post_code", postCode)).iterator()) {
-           while (cursor.hasNext()) {
-                result.add(documentToHomeSale(cursor.next()));
-           }
+       try {
+            Statement stmt = this.connection.createStatement();
+            String sqlStr = "SELECT * from sales WHERE post_code = " + postCode;
+            ResultSet rs = stmt.executeQuery(sqlStr);
+            while (rs.next()) {
+                result.add(documentToHomeSale(rs));
+            }
+       } catch (SQLException e) {
+        System.err.println("Error executing query: "  + e.getMessage());
        }
-       Document query = new Document("queryType", "get").append("queryDatetime", LocalDateTime.now().toString())
-                .append("params", "post_code=" + postCode)
-                .append("status", result != null ? 200 : 404);
-       salesQueryCollection.insertOne(query);
        return result;
    }
 
