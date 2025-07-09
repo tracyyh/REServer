@@ -21,7 +21,6 @@ import com.mongodb.client.MongoCursor;
 public class SalesDAO {
 
    private MongoCollection<Document> salesCollection;
-   private MongoCollection<Document> salesQueryCollection;
    private Connection connection;
 
 
@@ -43,25 +42,6 @@ public class SalesDAO {
             System.err.println("Failed to connect to Neon PostgreSQL: " + e.getMessage());
         }
     }
-
-    private void updateQueryLog(String queryType, String params, int status) {
-        String uuid = UUID.randomUUID().toString().replace("-", "");
-        String shortId = uuid.substring(0, 5);
-        String query = String.format(
-            "INSERT INTO sales_query (query_id, query_type, query_datetime, query_params, status) VALUES ('%s', '%s', CURRENT_DATE, '%s', %d)",
-            shortId, queryType, params, status
-            );
-        System.err.println(query);
-        try (Statement stmt = this.connection.createStatement()) {
-            stmt.executeUpdate(query);
-        } 
-        catch (SQLException e) {
-            System.err.println("Error updating query log: " + e.getMessage());
-        }
-        
-        
-    }
-
 
 public int newSale(HomeSale homeSale) {
     String sqlStr = String.format(
@@ -165,7 +145,6 @@ public int newSale(HomeSale homeSale) {
             Statement stmt = this.connection.createStatement();
             String sqlStr = "SELECT * from sales WHERE property_id = " + propertyId;
             ResultSet rs = stmt.executeQuery(sqlStr);
-            this.updateQueryLog("GET", "property_id=" + propertyId, 200);
             while (rs.next()) {
                 return Optional.of(documentToHomeSale(rs));
             }
@@ -182,7 +161,6 @@ public int newSale(HomeSale homeSale) {
             Statement stmt = this.connection.createStatement();
             String sqlStr = "SELECT * from sales WHERE post_code = " + postCode;
             ResultSet rs = stmt.executeQuery(sqlStr);
-            this.updateQueryLog("GET", "post_code=" + postCode, 200);
             while (rs.next()) {
                 result.add(documentToHomeSale(rs));
             }

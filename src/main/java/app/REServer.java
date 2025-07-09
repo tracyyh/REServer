@@ -4,24 +4,20 @@ import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
 import sales.SalesController;
 import sales.SalesDAO;
-import logs.QueryDAO;
-import logs.QueryController;
 
 public class REServer {
         public static void main(String[] args) {
 
             // in memory test data store
             var sales = new SalesDAO();
-            var queries = new QueryDAO();
 
             // API implementation
             SalesController salesHandler = new SalesController(sales);
-            QueryController queryHandler = new QueryController(queries);
 
-            // start Javalin on port 7070
+            // start Javalin on port 8001
             var app = Javalin.create()
                     .get("/", ctx -> ctx.result("Real Estate server is running"))
-                    .start(7070);
+                    .start(8001);
 
             // configure endpoint handlers to process HTTP requests
             JavalinConfig config = new JavalinConfig();
@@ -62,16 +58,6 @@ public class REServer {
                     int low = Integer.parseInt(ctx.pathParam("low"));
                     int high = Integer.parseInt(ctx.pathParam("high"));
                     salesHandler.getSalesByPriceRange(ctx, low, high);
-                });
-
-                app.get("/metrics/postcode-count/{postcode}" , ctx -> {
-                    int postcode = Integer.parseInt(ctx.pathParam("postcode"));
-                    queryHandler.getPostcodeCount(ctx, postcode);
-                });
-
-                app.get("/metrics/property-count/{saleID}", ctx -> {
-                    int saleID = Integer.parseInt(ctx.pathParam("saleID"));
-                    queryHandler.getPropertyCount(ctx, saleID);
                 });
             });
         }
